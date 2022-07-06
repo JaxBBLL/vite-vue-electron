@@ -1,7 +1,7 @@
 const path = require('path')
-const { app, BrowserWindow, ipcMain } = require('electron')
-const axios = require('axios')
-const setCookie = require('./cookie')
+const { app, BrowserWindow } = require('electron')
+require('./ipcMain')
+const { initDownload } = require('./download')
 
 const isDev = process.env.IS_DEV == 'true' ? true : false
 
@@ -38,8 +38,8 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  setCookie()
-  createWindow()
+  global.window = createWindow()
+  initDownload(global.window)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -56,28 +56,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-ipcMain.handle('request', async (event, args) => {
-  const result = await axios.get(args).then((res) => {
-    console.log(res.data)
-    var arr = analysis(res.data).map((item) => {
-      if (item.startsWith('/') && item[1] !== '/') {
-        return args + item
-      } else {
-        return item
-      }
-    })
-    return arr
-  })
-  return result
-})
-
-function analysis(str) {
-  const reg = /<img[\s\S]+?src="([\S]+?)"[\s\S]+?>/gi
-  let arr = []
-  let res
-  while ((res = reg.exec(str))) {
-    arr.push(res[1])
-  }
-  return arr
-}

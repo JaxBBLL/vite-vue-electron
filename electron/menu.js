@@ -9,7 +9,6 @@ let template = [
         click: () => {
           var win = new BrowserWindow({
             width: 300,
-
             height: 300,
           })
           win.loadFile('demo2.html')

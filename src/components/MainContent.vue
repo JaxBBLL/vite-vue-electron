@@ -29,18 +29,20 @@
 import { ref } from 'vue'
 import { useMessage } from 'naive-ui'
 const win: any = window
-const url = ref('https://www.qq.com')
+const url = ref('https://www.zhaosw.com/product/detail/255536545')
 const list = ref([])
 const Message = useMessage()
 
 const onClick = () => {
-  win.electron.ipcRenderer.invoke('request', url.value).then((res) => {
+  win.electron.query(url.value).then((res) => {
     list.value = res
   })
 }
 
 const onDownload = () => {
-  Message.warning('功能还没实现！')
+  win.electron.download().then((res) => {
+    console.log(res)
+  })
 }
 </script>
 
